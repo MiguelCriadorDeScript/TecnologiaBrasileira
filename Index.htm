@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircuitFlow - Products | Loja de Kits Arduino</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: rgba(10, 14, 39, 0.95);
+            padding: 20px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .logo span {
+            color: #00d9ff;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Products Section */
+        .section-title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 900;
+            color: #00d9ff;
+            margin-bottom: 50px;
+            text-shadow: 0 0 20px rgba(0,217,255,0.5);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .product-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(0,217,255,0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: #00d9ff;
+            box-shadow: 0 20px 60px rgba(0,217,255,0.3);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background: #1a1f3a;
+        }
+
+        .product-info {
+            padding: 30px;
+        }
+
+        .product-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 15px;
+        }
+
+        .product-description {
+            font-size: 16px;
+            color: #a0aec0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .product-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .product-features li {
+            padding: 8px 0;
+            color: #a0aec0;
+        }
+
+        .product-features li:before {
+            content: "✓ ";
+            color: #00ff87;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .product-price {
+            font-size: 36px;
+            font-weight: 900;
+            color: #00ff87;
+            margin-bottom: 20px;
+        }
+
+        .btn-buy {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+            color: #0a0e27;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-buy:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,217,255,0.5);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f3a 0%, #0f1540 100%);
+            border: 2px solid #00d9ff;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            color: #fff;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #00d9ff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(0,217,255,0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0,217,255,0.3);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00ff87 0%, #00cc6a 100%);
+            color: #0a0e27;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,255,135,0.5);
+        }
+
+        /* PIX Screen */
+        .pix-screen {
+            text-align: center;
+        }
+
+        .pix-qrcode {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border: 3px solid #00d9ff;
+            border-radius: 15px;
+            padding: 10px;
+            background: white;
+        }
+
+        .pix-code {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            word-break: break-all;
+            font-size: 12px;
+            color: #00d9ff;
+            margin: 20px 0;
+        }
+
+        .copy-btn {
+            padding: 10px 30px;
+            background: #00d9ff;
+            color: #0a0e27;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        /* WhatsApp Question */
+        .whatsapp-question {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .whatsapp-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-yes, .btn-no {
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-yes {
+            background: #00ff87;
+            color: #0a0e27;
+        }
+
+        .btn-no {
+            background: #ff0844;
+            color: #fff;
+        }
+
+        .btn-yes:hover, .btn-no:hover {
+            transform: scale(1.05);
+        }
+
+        /* reCAPTCHA Container */
+        .recaptcha-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* Terms */
+        .terms-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .terms-container label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .terms-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #00ff87;
+            margin-bottom: 20px;
+        }
+
+        .success-message h3 {
+            font-size: 32px;
+            color: #00ff87;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            font-size: 18px;
+            color: #a0aec0;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 14, 39, 0.95);
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        footer p {
+            color: #a0aec0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .pix-qrcode {
+                width: 250px;
+                height: 250px;
+            }
+
+            .whatsapp-btns {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">Circuit<span>Flow</span> Products</div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h1 class="section-title">🛒 Nossos Produtos</h1>
+
+        <!-- Products Grid -->
+        <div class="products-grid">
+            <!-- Product 1: Kit LED Piscante -->
+            <div class="product-card">
+                <img src="https://i.imgur.com/OmZdgDQ.jpeg" alt="Kit LED Piscante" class="product-image">
+                <div class="product-info">
+                    <h2 class="product-name">Kit LED Piscante</h2>
+                    <p class="product-description">
+                        Seu primeiro projeto com Arduino! Kit completo para iniciantes com tutorial passo a passo.
+                    </p>
+                    <ul class="product-features">
+                        <li>1 Arduino Uno (código gravado)</li>
+                        <li>1 LED Vermelho</li>
+                        <li>Jumpers inclusos</li>
+                        <li>Tutorial em vídeo no YouTube</li>
+                        <li>Manual de montagem</li>
+                        <li>Suporte via WhatsApp</li>
+                    </ul>
+                    <div class="product-price">R$ 52,50</div>
+                    <button class="btn-buy" onclick="openModal('led-kit')">🛒 Comprar Agora</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 CircuitFlow - Todos os direitos reservados</p>
+        <p>WhatsApp: +55 31 9177-4360 | Email: circuitflowoffci@gmail.com</p>
+    </footer>
+
+    <script>
+        // Product Data
+        const products = {
+            'led-kit': {
+                name: 'Kit LED Piscante',
+                price: 52.50,
+                pixCode: '00020126580014BR.GOV.BCB.PIX0136da3932b5-5530-4e84-b44f-dfab4d7d32ff5204000053039865406150.005802BR5925AMARAL & CARVALHO SOLUCOE6009SAO PAULO61080540900062250521fc8G7wzQ3pSqr5h87ie3y63041425',
+                pixQR: 'https://i.imgur.com/OmZdgDQ.jpeg' // Temporário - trocar pelo QR real
+            }
+        };
+
+        let currentProduct = null;
+        let orderData = {};
+
+        // Open Modal
+        function openModal(productId) {
+            currentProduct = products[productId];
+            document.getElementById('modal').classList.add('active');
+            showFormStep();
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            currentProduct = null;
+            orderData = {};
+        }
+
+        // Show Form Step
+        function showFormStep() {
+            const html = `
+                <h2 class="modal-title">📝 Dados para Entrega</h2>
+                <form id="orderForm" onsubmit="submitForm(event)">
+                    <div class="form-group">
+                        <label>Nome Completo *</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone/WhatsApp *</label>
+                        <input type="tel" id="phone" required placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label>CEP *</label>
+                        <input type="text" id="cep" required placeholder="00000-000" maxlength="9">
+                    </div>
+                    <div class="form-group">
+                        <label>Endereço Completo *</label>
+                        <input type="text" id="address" required placeholder="Rua, Número, Complemento">
+                    </div>
+                    <div class="form-group">
+                        <label>Cidade *</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado *</label>
+                        <select id="state" required>
+                            <option value="">Selecione</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="BA">Bahia</option>
+                            <!-- Add more states -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Continuar para Pagamento →</button>
+                </form>
+            `;
+            document.getElementById('modalBody').innerHTML = html;
+        }
+
+        // Submit Form
+        function submitForm(e) {
+            e.preventDefault();
+            
+            orderData = {
+                product: currentProduct.name,
+                price: currentProduct.price,
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                cep: document.getElementById('cep').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value
+            };
+
+            showPixStep();
+        }
+
+        // Show PIX Step
+        function showPixStep() {
+            const html = `
+                <div class="pix-screen">
+                    <h2 class="modal-title">💰 Pagamento via PIX</h2>
+                    <p style="color: #a0aec0; margin-bottom: 20px;">
+                        Valor: <strong style="color: #00ff87; font-size: 32px;">R$ ${currentProduct.price.toFixed(2)}</strong>
+                    </p>
+                    <p style="color: #a0aec0; margin-bottom: 20px;">
+                        Escaneie o QR Code ou copie o código PIX:
+                    </p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(currentProduct.pixCode)}" class="pix-qrcode" alt="QR Code PIX">
+                    <div class="pix-code">${currentProduct.pixCode}</div>
+                    <button class="copy-btn" onclick="copyPixCode()">📋 Copiar Código PIX</button>
+                    <p style="color: #ff0844; font-weight: 700; margin: 20px 0;">
+                        ⚠️ Após realizar o pagamento, clique em "Confirmar Pagamento"
+                    </p>
+                    <button class="btn-submit" onclick="showWhatsAppQuestion()">✅ Confirmar Pagamento</button>
+                </div>
+            `;
+            document.getElementById('modalBody').innerHTML = html;
+        }
+
+        // Copy PIX Code
+        function copyPixCode() {
+            navigator.clipboard.writeText(currentProduct.pixCode);
+            alert('✅ Código PIX copiado!');
+        }
+
+        // Show WhatsApp Question
+        function showWhatsAppQuestion() {
+            const html = `
+                <div class="whatsapp-question">
+                    <h2 class="modal-title">📱 Confirmar Pedido</h2>
+                    <p style="color: #a0aec0; font-size: 18px; margin-bottom: 30px;">
+                        Deseja enviar a confirmação do pedido via WhatsApp para a CircuitFlow?
+                    </p>
+                    <div class="whatsapp-btns">
+                        <button class="btn-yes" onclick="showVerificationStep()">✅ SIM</button>
+                        <button class="btn-no" onclick="showThankYou()">❌ NÃO</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalBody').innerHTML = html;
+        }
+
+        // Show Verification Step
+        function showVerificationStep() {
+            const html = `
+                <h2 class="modal-title">🔒 Verificação de Segurança</h2>
+                <div class="recaptcha-container">
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                </div>
+                <div class="terms-container">
+                    <label>
+                        <input type="checkbox" id="termsCheck">
+                        <span>Concordo em enviar minhas informações para a CircuitFlow via WhatsApp</span>
+                    </label>
+                </div>
+                <button class="btn-submit" onclick="sendWhatsApp()">📱 Confirmar e Enviar</button>
+            `;
+            document.getElementById('modalBody').innerHTML = html;
+        }
+
+        // Send WhatsApp
+        function sendWhatsApp() {
+            const recaptchaResponse = grecaptcha.getResponse();
+            const termsChecked = document.getElementById('termsCheck').checked;
+
+            if (!recaptchaResponse) {
+                alert('⚠️ Por favor, complete a verificação reCAPTCHA!');
+                return;
+            }
+
+            if (!termsChecked) {
+                alert('⚠️ Por favor, aceite os termos!');
+                return;
+            }
+
+            const message = `🛒 *NOVO PEDIDO - CIRCUITFLOW*\n\n` +
+                `📦 *Produto:* ${orderData.product}\n` +
+                `💰 *Valor:* R$ ${orderData.price.toFixed(2)}\n\n` +
+                `👤 *DADOS DO CLIENTE:*\n` +
+                `📛 Nome: ${orderData.fullName}\n` +
+                `📧 Email: ${orderData.email}\n` +
+                `📱 Telefone: ${orderData.phone}\n\n` +
+                `📍 *ENDEREÇO DE ENTREGA:*\n` +
+                `CEP: ${orderData.cep}\n` +
+                `Endereço: ${orderData.address}\n` +
+                `Cidade: ${orderData.city}\n` +
+                `Estado: ${orderData.state}\n\n` +
+                `✅ *Pagamento confirmado pelo cliente*`;
+
+            const whatsappURL = `https://api.whatsapp.com/send?phone=5531991774360&text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappURL, '_blank');
+            
+            setTimeout(() => {
+                showSuccess();
+            }, 1000);
+        }
+
+        // Show Thank You (No WhatsApp)
+        function showThankYou() {
+            closeModal();
+            alert('✅ Pedido registrado! Entraremos em contato em breve.');
+        }
+
+        // Show Success
+        function showSuccess() {
+            const html = `
+                <div class="success-message">
+                    <div class="success-icon">✅</div>
+                    <h3>Pedido Confirmado!</h3>
+                    <p>Seu pedido foi enviado com sucesso!</p>
+                    <p style="margin-top: 20px;">Entraremos em contato via WhatsApp em breve.</p>
+                    <button class="btn-submit" style="margin-top: 30px;" onclick="closeModal()">Fechar</button>
+                </div>
+            `;
+            document.getElementById('modalBody').innerHTML = html;
+        }
+
+        // Format inputs
+        document.addEventListener('input', (e) => {
+            if (e.target.id === 'phone') {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                    value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+                    e.target.value = value;
+                }
+            }
+            if (e.target.id === 'cep') {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 8) {
+                    value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+                    e.target.value = value;
+                }
+            }
+        });
+    </script>
+</body>
+  </html>
